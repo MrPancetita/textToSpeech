@@ -2,6 +2,8 @@ import uuid
 import requests
 import json
 
+# Este es el que hay que usar para, a partir del texto de noticia.txt generar el archivo de audio por batch synthesis
+
 synthesis_id = uuid.uuid4()
 print(f"Synthesis ID: {synthesis_id}")
 
