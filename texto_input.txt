@@ -1,0 +1,269 @@
+0. Introducción
+Los asuntos relacionados con el rendimiento son muy importantes en las redes de computadoras. Cuando hay miles conectadas entre sí, son comunes las interacciones complejas, con consecuencias imprevisibles. Con frecuencia, esta complejidad conduce a un rendimiento pobre, sin que nadie sepa por qué. El rendimiento que reciben las aplicaciones depende del rendimiento combinado de las capas de transporte, de red y de enlace.
+
+En este tema presentamos un estudio del rendimiento de las redes. Analizaremos cómo evoluciona el rendimiento en función de los parámetros básicos de la red (longitud del medio, número de estaciones, topología, velocidad de transmisión), y entenderemos el porqué de la degradación del rendimiento en el caso de algunos métodos de acceso.
+
+En cualquier red es deseable que se pueda visualizar en todo momento información de muy diverso tipo como tiempo de funcionamiento, porcentaje de utilización, memoria caché existente, conexiones activas, estado de las transacciones, situación de los discos, tipos de paquetes enviados y sus incidencias, etc. Para este fin, los sistemas de red disponen de elementos y utilidades que permiten recoger y visualizar diferentes estadísticas sobre el consumo de recursos. Son los monitores de red.
+
+Concluiremos el estudio, examinando las acciones a realizar para mejorar las prestaciones de los servicios de red, que van desde mejorar el rendimiento de dispositivos hardware, hasta reemplazar las redes existentes por las nuevas de alta velocidad.
+
+1. Problemas de rendimiento en las redes de computadoras
+Algunos problemas de rendimiento, como la congestión, se deben a sobrecargas temporales de los recursos. Si repentinamente llega más tráfico del que un router puede manejar, ocurrirá una congestión y se reducirá el rendimiento.
+
+El rendimiento también se degrada cuando hay un desequilibrio estructural de los recursos. Por ejemplo, si una línea de comunicación de gigabits está conectada a un PC de bajo rendimiento, este no será capaz de procesar los paquetes de entrada con rapidez y se perderán algunos. Tarde o temprano se retransmitirán estos paquetes, lo cual generará retardo adicional, desperdicio del ancho de banda y una reducción en el rendimiento.
+
+Las sobrecargas se pueden desencadenar de forma síncrona. Por ejemplo, lo que ocurre tras un fallo del suministro eléctrico. Al regresar la energía, todas las máquinas arrancan al mismo tiempo. Una secuencia de arranque común podría requerir que la máquina primero acuda a algún servidor (DHCP) para conocer su identidad, y luego a un servidor de archivos para obtener una copia del sistema operativo. Si cientos de máquinas en un centro de datos hacen todo esto al mismo tiempo, el servidor quizá se colapsaría debido a la carga.
+
+Incluso en ausencia de sobrecargas síncronas y en presencia de suficientes recursos disponibles, puede haber un bajo rendimiento debido a la falta de ajuste del sistema. Por ejemplo, si una máquina tiene bastante potencia de CPU y memoria, pero no se ha asignado suficiente memoria como espacio de búfer, el control de flujo reducirá la velocidad de recepción de los segmentos y se limitará el rendimiento. Este fue un problema para muchas conexiones TCP a medida que Internet se hacía más rápida, pero el tamaño predeterminado de la ventana de control de flujo permanecía fijo a 64 KB.
+
+Otro problema de rendimiento que ocurre con las aplicaciones de tiempo real, como la transmisión de audio y video, es el jitter. No basta con tener suficiente ancho de banda en promedio para un buen rendimiento. También se requieren retardos cortos en la transmisión. Para lograr retardos cortos en forma consistente se requiere un cuidadoso diseño de la carga de la red, un soporte de QoS en las capas de enlace y de red, o ambos.
+
+2. Evaluación de prestaciones de un sistema en red
+2.1. Evaluación del rendimiento de la red física
+2.1.1. Conceptos previos
+Se puede definir el caudal de información como el número total de bits de información transmitidos por unidad de tiempo. En esta evaluación se excluyen los bits destinados a direccionamiento, control de errores y otros propósitos administrativos transmitidos junto a los bits de información.
+
+La utilización del canal se define como la fracción de tiempo dedicada a la transmisión de los bits de información comparada con el tiempo total de transmisión de los bits de información y los bits de sobrecarga (overhead). Para la obtención de una máxima utilización del canal debe mantenerse lo más baja posible la sobrecarga asociada con la transmisión de información. Generalmente la sobrecarga está constituida por el tiempo de espera en la obtención del acceso al medio, la transmisión de preámbulos para sincronización del receptor y el tiempo de transmisión de direcciones, control de errores y otra información de control dependiente del protocolo.
+
+El retardo se define de varias formas, dependiendo de los instantes de tiempo considerados para la medición del mismo. Una de estas medidas es el tiempo medio de transferencia de paquetes entendido como el intervalo de tiempo medio desde la generación de un paquete en la estación origen hasta su total recepción en el destino. Este tiempo se compone del tiempo que el paquete permanece en la cola de la estación origen hasta que está en disposición de ser transmitido (retardo en cola de espera), el tiempo de espera hasta el comienzo de la transmisión (retardo de acceso o de inserción), el tiempo de transmisión del paquete y el retardo de propagación del medio.
+
+2.1.2. Procedimientos de evaluación del rendimiento
+Definimos el rendimiento como "la cantidad de información útil que la red es capaz de transportar en relación con la cantidad de bits transportados realmente". En función de esta definición, las medidas de rendimiento pretenden dar una idea intuitiva del aprovechamiento de la capacidad del canal. Hay que señalar que la relación antes descrita para el rendimiento puede dar lugar a resultados engañosos, puesto que solo tienen en cuenta determinados parámetros y hace omisión de otros. En concreto, solo se tienen en consideración los tiempos de propagación, de transmisión y de acceso al medio, y no se hace ninguna sobre el retardo sufrido por los mensajes desde que llegan a la cola hasta que terminan de ser transmitidos. De esta forma puede incrementarse ficticiamente el rendimiento aumentando la longitud de la trama de manera que los bits de control y el tiempo de adquisición del medio resulten despreciables respecto a esta.
+
+Según lo expresado, la fórmula de rendimiento sería:
+
+rendimiento = nº bits datos / nº bits totales
+
+De manera equivalente puede definirse como la relación entre la velocidad efectiva de la red, Ve (bits/s), y la capacidad del canal, Vr (bits/s):
+
+rendimiento = Ve / Vr.
+
+Para el cálculo de la velocidad efectiva hay que tener en cuenta que, por una parte, no todos los bits del mensaje son bits de datos, y por otra, que el tiempo para enviar un mensaje se compone del tiempo de acceso al medio y del tiempo de transmisión. Por lo tanto, Lm = Ld + Lc y Ttotal = Tm + Tacc, siendo Lm la longitud total del mensaje; Ld los bits de datos del mensaje; Lc los bits de control del mensaje; Ttotal el tiempo total de transmisión del mensaje; Tm el tiempo de transmisión del mensaje; y Tacc el tiempo de acceso al medio.
+
+Así pues, Ve vendría dada por el número de bits de datos de un mensaje por el número de mensajes, Nm, que la red es capaz de transportar por unidad de tiempo:
+
+Ve = (Lm - Lc) * Nm
+
+Nm se evalúa como el inverso del tiempo total de transmisión Nm = 1 / (Tm + Tacc), con lo que se obtiene como expresión del rendimiento para nuestro análisis aproximado:
+
+rendimiento = (Lm - Lc) / ((Tm + Tacc) * Vr)
+
+2.1.2.1 Degradación del rendimiento en las LAN
+Las LAN se caracterizan por la velocidad de transmisión utilizada (Vr) y por la longitud del medio de comunicación (d). De hecho, el producto de ambos factores Vr * d puede ser utilizado para caracterizar las redes locales. Este producto es casi constante para la mayoría de los medios (aproximadamente 2/3 de la velocidad de la luz). Un análisis dimensional de la fórmula V * d / V nos muestra que es igual a la longitud del medio de transmisión en bits, es decir, el número de bits que pueden estar en tránsito entre dos nodos en cualquier momento. Es fácil deducir que, con la hipótesis establecida de velocidad de propagación, el número de bits en tránsito es 5 bits por Km y por Mbps. Así, por ejemplo, un sistema Ethernet sobre un medio de 500 m a 10 Mbps tiene una longitud de 25 bits.
+
+La longitud del medio, expresada en bits, comparada con la longitud de la trama se denomina generalmente a, a = Vr * d / V * L, siendo L la longitud de la trama. Si tenemos en cuenta que d / V es el tiempo de propagación en el medio (peor caso), y que L / Vr es el tiempo de transmisión de una trama, puede redefinirse a como la relación entre el retardo de propagación del medio de extremo a extremo respecto al tiempo de transmisión de un paquete (es decir, el retardo de propagación del canal normalizado).
+
+a = tiempo de propagación (Tprop) / tiempo de transmisión (Ttx)
+
+El parámetro a puede ser visto como el número máximo de paquetes que pueden estar en tránsito en la red en un momento dado. Además, establece el límite superior de utilización de una LAN. Consideremos un mecanismo de acceso ideal que permite una sola transmisión cada vez. Tan pronto como una transmisión ha finalizado, otro nodo comienza a transmitir. Además, la transmisión consta solo de datos; no hay bits de overhead. ¿Cuál es, entonces, la máxima utilización de la red? Como hemos visto anteriormente, esta es la relación entre la velocidad efectiva y la velocidad real.
+
+rendimiento = Ve / Vr = (L / (Tprop + Ttx)) / V = Ttx / (Tprop + Ttx) = 1 / (1 + a)
+
+Así pues, el rendimiento varía inversamente con a. Podemos afirmar entonces que 1 / (1 + a) supone un límite superior de la eficiencia de una LAN, independientemente del protocolo de acceso considerado. Dos consideraciones:
+
+Se asume que cada transmisión supone el tiempo de propagación máximo.
+Se supone, también que únicamente hay una transmisión cada vez.
+Esas dos hipótesis no son siempre ciertas, sin embargo, la fórmula es casi siempre un límite superior válido debido a la sobrecarga del método de control de acceso al medio. Esta sobrecarga, por otra parte, es inevitable. Las tramas deben incluir bits de direcciones y de sincronización. Existe también una sobrecarga administrativa en el control del protocolo y otros particulares de cada protocolo.
+
+Es interesante realizar algunas observaciones del efecto del parámetro a sobre el rendimiento de las LAN. Cuando a es pequeño (mucho menor que 1), el tiempo de transmisión de paquete es dominante respecto al tiempo de propagación. Por lo tanto, la fracción de tiempo utilizada en transmitir la información es elevada comparada con el tiempo total, incluida la sobrecarga. En la mayoría de los protocolos de acceso al medio, en consecuencia, se puede lograr una alta utilización del canal y pequeños retardos cuando a tiene valores pequeños.
+
+Si a tiene un valor alto (próximo o superior a 1), sin embargo, el retardo de propagación del medio es el factor dominante, resultando que la fracción de tiempo dedicada a la transmisión es mucho inferior. Esto es debido a la mayor fracción de sobrecarga producida por el elevado retardo de propagación que da lugar, en algunos esquemas de LAN, a una rápida degradación del rendimiento con el aumento de a. El protocolo CSMA/CD es un ejemplo claro de lo anterior. CSMA/CD se comporta satisfactoriamente mientras el retardo de propagación normalizado a sea suficientemente bajo. Cuando se incrementa a, el rendimiento se degrada rápidamente. Esto es debido a que la sobrecarga del protocolo se incrementa significativamente en términos de la fracción de tiempo pérdida en colisiones y resolución de las mismas. Por lo tanto, las técnicas CSMA/CD no son aconsejables para redes de gran ancho de banda, pequeño tamaño de paquetes y largas distancias, debido a que bajo estas circunstancias a puede adquirir un valor elevado.
+
+2.2. Medición del rendimiento de las redes
+Para mejorar el rendimiento de una red, se debe determinar exactamente lo que ocurre, y para ello se deben efectuar mediciones. Las mediciones se pueden hacer de muchas maneras y en muchos lugares (tanto físicos como en la pila de protocolos). El tipo de medición más básico es iniciar un temporizador al empezar alguna actividad y medir el tiempo que tarda esa actividad. Por ejemplo, saber cuánto tiempo se requiere para confirmar la recepción de un segmento es una medición clave. Otras mediciones se hacen con contadores que registran la frecuencia con que ocurre un evento (por ejemplo, cantidad de segmentos perdidos). Por último, a menudo nos interesa saber la cantidad de algo, como el número de bytes procesados durante cierto intervalo de tiempo.
+
+Algunos de los aspectos fundamentales que debemos tener en cuenta a la hora de realizar mediciones son: tamaño de la muestra, que se trate de muestras representativas, el uso de la caché, y la carga de la red durante las pruebas.
+
+2.3. Monitores
+Para obtener información sobre el tráfico global en una red se suele utilizar un monitor de red (analizador de red o sonda). En cualquier red es deseable poder visualizar en todo momento información como el tiempo de funcionamiento, porcentaje de utilización, memoria caché existente, conexiones activas, estado de las transacciones, situación de los discos, tipos de paquetes enviados y sus incidencias, etc.
+
+Esta información resulta de especial interés para el administrador de la red a la hora de optimizar el rendimiento de la red. Para este fin, los sistemas de red disponen de los monitores de red que permiten recoger y visualizar diferentes estadísticas sobre el consumo de recursos, además de permitir al administrador definir ciertos parámetros que activan alarmas cuando toman determinados valores; por ejemplo, si la capacidad de los servidores supera un determinado porcentaje.
+
+El protocolo de monitorización distribuida RMON (Remote Monitoring) es uno de los estándares de gestión de red más populares. Funciona según un esquema agente/aplicación de gestión, donde la porción del agente reside en el dispositivo de red que está siendo monitorizado y la aplicación en el software de gestión de red central. Esta arquitectura hace posible que múltiples aplicaciones de gestión puedan acceder a un único agente en cualquier momento y ver diferentes aspectos de su base de información.
+
+RMON se instala frecuentemente en la red como sondas autónomas, es decir, dispositivos que monitorizan enlaces o nodos específicos. Sin embargo, cada vez más, las sondas están siendo integradas en los propios dispositivos de red, como conmutadores y routers. En algunos casos, los gestores RMON pueden, incluso, recoger información de las estaciones finales, gracias a un software cliente especial integrado en las tarjetas de red.
+
+Los agentes responden a las consultas efectuadas por las aplicaciones de gestión y envían alertas cuando se exceden umbrales predeterminados. Las diferencias entre RMON y RMON2 residen principalmente en los tipos de contenidos que filtran sus agentes.
+
+La información recogida por el MIB (Management Information Base) RMON original se clasifica en diez grupos de estadísticas. Pero solo seis de esos diez grupos se refieren al tráfico de la red actual. El resto trata cuestiones como los errores de red, utilización y distribución del tamaño de la trama. Con RMON2, por el contrario, los diez grupos se ocupan del tráfico de la red. Es más, ofrece información a nivel de aplicación. RMON se limita a rastrear información MAC. Como los routers no pueden pasar direcciones MAC a medida que se mueven los paquetes por la red, las sondas RMON solo pueden ver la última dirección MAC del router. En consecuencia, las sondas RMON han de situarse a través de toda la red, y lo mejor que pueden hacer es resumir operaciones básicas.
+
+RMON2, sin embargo, actúa a niveles superiores del modelo OSI, proporcionando información detallada a nivel de red y de aplicación. Como puede actuar en los niveles de 3 a 7 de OSI, es capaz de, por ejemplo, identificar la distribución de protocolos de nivel 3, informando del uso de protocolos como IP e IPX. También puede "mirar" dentro de los protocolos de nivel de aplicación para identificar usuarios HTML, telnet y otros programas. Asimismo, un grupo RMON2, el Protocol Directory, lista los protocolos que cada agente es capaz de analizar. Esta capacidad potencia la interoperatividad con sistemas de gestión de red multifabricante.
+
+Actualmente, las principales aplicaciones de software de gestión de red dan soporte total de RMON2, y está presente tanto en forma de sondas como integrado en routers y conmutadores; además, es capaz de monitorizar el rendimiento de las tarjetas de red.
+
+2.4. Evaluación de los elementos de la red
+Es fácil atribuir un bajo rendimiento de la red a una escasez de ancho de banda. Esto no es cierto, y además es peligroso. Muy a menudo, un rendimiento de la red pobre es realmente el resultado de un tráfico de red excesivo. Hay muchos factores que podrían estar contribuyendo al incremento del tráfico en la red. Si hay demasiadas estaciones de trabajo en un segmento se puede generar más tráfico del que puede manejar el ancho de banda disponible. También existe una tendencia en las aplicaciones a utilizar más ancho de banda, debido fundamentalmente a la popularidad creciente de las aplicaciones multimedia. Finalmente, el tamaño de paquete medio en todas las aplicaciones está creciendo.
+
+Para determinar si lo que causa los problemas de red es el tráfico excesivo, deberíamos colocar un analizador de protocolo en cada segmento de red afectado. El analizador se puede configurar para que supervise los paquetes para la topología y protocolo específicos del segmento, permitiendo supervisar el tráfico en el segmento al que está conectado. Un analizador de protocolo ayuda a determinar no solo la utilización de ancho de banda media en el segmento, sino también el tamaño de paquete medio y su composición. Además, el analizador puede ayudar a la hora de detectar tendencias en cuanto a tráfico, periodos de tráfico máximo y dispositivos que están generando paquetes incorrectos o que actúan como cuellos de botella de la red.
+
+La amplia experiencia ha demostrado que en casi todas las redes rápidas la sobrecarga de los sistemas operativos y protocolos domina el tiempo real en el cable. Por ejemplo, en teoría, el tiempo mínimo de una RPC en una red Ethernet de 1 Gbps es de 1 µseg, lo cual corresponde a una solicitud mínima (512 bytes) seguida de una respuesta mínima (512 bytes). En la práctica, reducir la sobrecarga de software y hacer que el tiempo de la RPC esté lo más cerca posible de 1 µseg es un logro considerable y ocurre raras veces en la práctica.
+
+Asimismo, el mayor problema al operar a 1 Gbps es llevar comúnmente los bits desde el búfer del usuario hasta la red con una velocidad suficiente y lograr que el host receptor los procese tan rápido como lleguen. Si se duplica la velocidad del host (CPU y memoria), con frecuencia casi se puede duplicar la tasa de transferencia real. En muchos casos no tiene efecto duplicar la capacidad de la red si el cuello de botella está en los hosts.
+
+Como vemos, hay muchos problemas de red que reducirán el rendimiento y que no tienen nada que ver con el ancho de banda insuficiente. Vamos a ver algunos problemas que ralentizarán la red y que no se evitarán aumentando el ancho de banda.
+
+2.4.1. Problemas de rendimiento relacionados con el servidor
+2.4.1.1 Velocidad del procesador
+Obviamente, la velocidad real del procesador es un factor importante que afecta al rendimiento del servidor. Un servidor muy utilizado con un procesador que no es el apropiado simplemente no puede hacer frente a las peticiones de datos que recibe. Algunos sistemas operativos de red, como NetWare o Windows Server, tienen utilidades de servidor que realizan pruebas de la velocidad del servidor. Los resultados de dicha prueba de velocidad pueden dar una buena estimación del rendimiento global del servidor, e indicarán si la potencia de procesamiento es suficiente para la tarea.
+
+2.4.1.2 Subsistema de disco
+Por definición, un servidor de archivos proporciona servicios de archivo: acceso a los datos y archivos de aplicación almacenados en el subsistema de disco del servidor de archivos. El subsistema de disco es el propio disco duro y la controladora de disco que gestiona la transferencia de datos entre el disco y el procesador del servidor. Si el subsistema de disco no puede proporcionar un acceso lo suficientemente rápido a los archivos almacenados en él, los usuarios de red perderán mucho tiempo esperando los datos que han enviado o solicitado al servidor de archivos para su procesamiento. La velocidad de transferencia de datos entre el procesador y el subsistema de disco es una función del propio disco, de la controladora de disco y de las interfaces de bus situadas entre el disco y la controladora de disco y entre esta y el procesador. Cuanto más rápidos sean estos componentes, más rápido será el tiempo de respuesta de la red.
+
+El primer signo de que el subsistema de disco está disminuyendo el rendimiento se observa cuando las solicitudes del servidor para leer y/o escribir datos están a la espera en la E/S de disco. La mayoría de los sistemas operativos de red incluyen utilidades que muestran el porcentaje de tiempo durante el cual las solicitudes están esperando a la E/S.
+
+2.4.1.3 Memoria de acceso aleatorio
+Si la memoria de acceso aleatorio (RAM) es pequeña o está mal configurada, se puede reducir el rendimiento de la red. Un servidor de red guarda en memoria los datos a los que ha accedido más recientemente mientras pueda. Cuando se llena toda la memoria que el servidor ha asignado como memoria caché, escribe los datos más antiguos en disco. Si el servidor tiene poca RAM, perderá una cantidad excesiva de tiempo yendo al disco a recuperar los datos. El leer los datos de la unidad de disco es mucho más lento que leer la información de la RAM. El sistema operativo de red incluirá una utilidad que indica el porcentaje de aciertos de caché, o veces que los datos solicitados se han obtenido en la RAM. Si los aciertos de caché caen por debajo del 85 por 100 aproximadamente, se debería pensar en añadir más memoria o reajustar la memoria caché.
+
+La velocidad de la RAM del servidor también afecta a su rendimiento global. Por lo tanto, se debería comprobar que la velocidad de la memoria se corresponde con su utilización.
+
+2.4.2. Problemas de rendimiento relacionados con la red
+Algunos problemas de rendimiento están relacionados con la conexión entre el dispositivo central y los elementos de la red, pero no son consecuencia de un ancho de banda insuficiente. Vamos a ver los problemas más habituales que acaban con el rendimiento y se producen en la conexión de red.
+
+2.4.2.1 Selección de la tarjeta de interfaz de red
+La elección de las tarjetas de interfaz de red, tanto en el servidor como en la estación de trabajo, pueden afectar drásticamente al rendimiento de la red. Estas tarjetas pueden variar en gran medida en rendimiento y coste, por lo que habrá que sopesar los beneficios de un rendimiento mayor frente al coste relativo de las tarjetas. Cuando se escoja una tarjeta de interfaz de red, hay que evaluar lo siguiente:
+
+Tasa de productividad (throughput) de datos: Es la velocidad a la que la tarjeta de red transfiere los datos entre la memoria del ordenador y la red. La tasa de productividad de datos depende de la anchura de bus con el procesador central y el método que utiliza la tarjeta de red para transferir los datos.
+Procesador en la tarjeta: Las tarjetas de interfaz de red que utilizan un procesador eficiente en la tarjeta pueden mejorar el rendimiento en la tarjeta, y, por lo tanto, en toda la red. En definitiva, para mejorar el rendimiento, se deben utilizar tarjetas que tengan procesadores de alto rendimiento en la tarjeta.
+2.4.2.2 Tarjetas ruidosas
+Si una tarjeta hace ruido, transmite flujos de paquetes erróneos, aumentar el ancho de banda no mejorará el rendimiento de la red. La razón es que es muy probable que el mal funcionamiento de la red inunde el ancho de banda disponible con paquetes erróneos.
+
+2.4.2.3 Pobre apoyo del controlador de la tarjeta de interfaz de red
+Si los controladores de las tarjetas de interfaz de red están poco optimizados, los usuarios sufrirán todo tipo de dificultades en la red, incluyendo un bajo rendimiento. Este bajo rendimiento se debe a que se necesita una retransmisión para enviar un paquete con éxito desde la tarjeta de interfaz de red a su dirección. Otros problemas asociados con los controladores pobres son los finales de temporización de red, conexiones perdidas y servidores "colgados".
+
+2.4.3. Problemas de rendimiento relacionados con la estación de trabajo
+Otro aspecto del rendimiento de la red es el rendimiento de la estación de trabajo. Las estaciones de trabajo con procesadores lentos, discos duros lentos y/o memoria insuficiente no serán capaces de procesar con rapidez los datos que envían y reciben del servidor. Esto hará que los usuarios tengan la impresión de que la red es lenta.
+
+3. Mejora de las prestaciones de un sistema en red
+3.1. Determinación de las medidas a adoptar
+Ahora que conocemos el ámbito de muchos problemas de las redes, el problema es cómo resolver las dificultades planteadas en una red particular.
+
+3.1.1. Evaluar la utilización y configuración del servidor
+3.1.1.1 Utilización del servidor
+La utilización media del servidor debería ser probablemente menor del 60 por 100. Sin embargo, esto variará de un sistema operativo a otro y entre distintas redes. Si la utilización media es superior al 60 por 100, debe actualizarse el procesador del servidor o transferir algunas aplicaciones a otro servidor.
+
+3.1.1.2 Utilización de la memoria caché
+Los aciertos de caché deben ser de media un 85% aproximadamente. Si no es así, debe comprobarse la cantidad de memoria y los búferes de caché asignados. La regla para la mayoría de los sistemas operativos de red es: cuanta más3.1.1.2 Utilización de la memoria caché (continuación) memoria mejor. Sin embargo, hay excepciones, especialmente cuando se trabaja con versiones antiguas de dichos sistemas.
+
+3.1.1.3 Utilización e intercambio (swapping) de disco
+Si las solicitudes del servidor están a la espera de la entrada/salida de disco, o si el servidor está utilizando el intercambio de disco (disk swapping, consiste en la utilización de almacenamiento de disco para aumentar la memoria de acceso aleatorio), hay que añadir memoria o incrementar los búferes de memoria caché. Si el propio disco del servidor está ocupado más de un 80 por 100, se necesitará incrementar la capacidad del disco o eliminar algunos datos de los discos existentes.
+
+3.1.1.4 Utilización de dispositivos de componentes
+Con tecnologías de dispositivos de componentes como SCSI, el rendimiento siempre se reduce al mínimo común denominador. Por lo tanto, si se tienen varios dispositivos conectados a un solo adaptador de nodo central SCSI, el rendimiento de señalización de la cadena completa será igual al del dispositivo más lento de la cadena.
+
+3.1.2. Evaluar las estaciones de trabajo
+Es importante evaluar la potencia de procesamiento de las estaciones de trabajo de los segmentos de la red que están sufriendo un rendimiento bajo. Aunque el servidor y la red funcionen bien, una estación de trabajo de potencia reducida puede dar a los usuarios la impresión de que la red es lenta.
+
+3.1.3. Evaluar los requisitos de las aplicaciones
+Las aplicaciones de bases de datos, de modelado estadístico y de CAD/CAM ponen en aprietos a los recursos del servidor. Si un servidor (o un disco de un servidor) tiene un número desproporcionado de aplicaciones de este tipo, deben intentar transferirse a otro servidor o disco para equilibrar la carga. Por otra parte, las aplicaciones de tratamiento de imágenes y multimedia generan una gran cantidad de tráfico de red, por lo que son un indicativo de la necesidad de un protocolo de red de alta velocidad. Obviamente, cuantos más usuarios hay, más carga tendrá el servidor (y mayor será el tráfico de red). Es más, los usuarios que deben atravesar puentes para acceder a los servidores estarán generando tráfico en otras redes distintas de su segmento local.
+
+Además, es importante observar los planes estratégicos y de presupuesto de la red, enumerando las aplicaciones que se espera añadir próximamente.
+
+3.1.4. Evaluar la utilización de la red
+Si a pesar de realizar los cambios sugeridos en la red, todavía hay un problema de rendimiento, es el momento de colocar un monitor de red en la red. Este dirá la cantidad y tipo del tráfico que se genera. También dirá que tiene problemas relacionados con la red, como tarjetas ruidosas, que provocarán un rendimiento pobre de la red.
+
+3.2. Alternativas
+Hay varias estrategias que se pueden utilizar. De ellas, destacan la segmentación de red, la conmutación y la adopción de redes LAN de alta velocidad.
+
+3.2.1. Segmentación de red
+La segmentación de red es una manera relativamente sencilla, rápida y barata de reducir la congestión de red.
+
+La definición de un segmento de red, o una subred, varía de una red a otra y de un protocolo a otro. En las redes Ethernet clásicas, un segmento es un cable que está terminado en ambos extremos. En el terreno de 10BaseT, un segmento es un concentrador o pila de concentradores. En un entorno de anillo con testigo (Token Ring), un segmento es una o más unidades de acceso multiestación (MAU). Las características de estas configuraciones tienen en común lo siguiente:
+
+Tienen todas la misma dirección de red.
+Comparten todas el mismo tipo de protocolo de red.
+Todas las estaciones conectadas a ellas "ven" todo el tráfico dirigido a todas las otras estaciones que están conectadas.
+Esta última característica significa que deben compartir el acceso a la red con todas las otras estaciones del segmento, esperando su turno (en Anillo con testigo y otros protocolos determinísticos) o mediante una contienda por el acceso con las otras estaciones del segmento (en 10BaseT y protocolos basados en contención similares).
+
+Independientemente de si utiliza un protocolo determinístico o un protocolo basado en contención, cuantas más estaciones haya en el segmento, más lento será el tiempo de respuesta. Después de todo, el ancho de banda de red es un recurso finito, y cuantas más estaciones tengan que compartirlo, más pequeño será el ancho de banda disponible para cada una. Por lo tanto, una manera de mejorar el rendimiento de redes es reducir el número de estaciones que comparten el ancho de banda (es decir, disminuir el número de estaciones en un segmento). A esto se le llama segmentación de red.
+
+La única manera de limitar el número de estaciones en cada segmento es crear más segmentos. A un grupo de segmentos que se pueden comunicar entre sí se le llama red de redes (internetwork). Hay tres maneras de hacer esto: puenteado interno, puenteado externo, y encaminamiento.
+
+3.2.1.1 Puenteado interno
+Es una técnica en la cual un servidor proporciona un puenteado (bridging) entre dos o más adaptadores de red instalados en el servidor que está ejecutando un sistema operativo que admite el puenteado. En una configuración de puenteado interno, el servidor proporciona toda la funcionalidad del puenteado. Aunque esto hace que sea fácil y bastante barato de implementar, también consume recursos del servidor que se podrían utilizar mejor para tareas de procesamiento críticas.
+
+El puenteado interno es una función que tiene lugar en la subcapa MAC de la capa de enlace de datos en el modelo de referencia OSI.
+
+3.2.1.2 Puenteado externo
+Igual que el puenteado interno, el puenteado externo es también una función de la subcapa MAC. Se produce cuando la función de puenteado se aleja del servidor y es gestionada por otro dispositivo. Este dispositivo puede ser un PC que ejecuta software de puente o un puente especializado.
+
+3.2.1.3 Encaminamiento
+El encaminamiento (routing) es una función que tiene lugar en la capa de red en el modelo OSI. Debido a que los encaminadores tienen acceso a información de nivel más alto que la de los puentes, tienen más inteligencia y pueden realizar decisiones respecto a cuándo, dónde y cómo se deben encaminar los paquetes de datos a través de la red. Esto tiene como resultado una entrega de paquetes más fiable.
+
+3.2.1.4 Conmutación
+Cuando el puenteado no es del todo suficiente, pero el encaminamiento es demasiado, es el momento de pensar en un conmutador. Un conmutador (switch) es realmente un puente especializado que crea un segmento de una unidad. Vamos a ver cómo evolucionaron los conmutadores a partir de los puentes. Cuando la red comienza a ralentizarse por primera vez, se segmenta. Todos los nodos del segmento siguen teniendo que compartir el mismo ancho de banda (con segmentación, sin embargo, hay menos nodos que lo compartan). Muy pronto, ya no es posible que los usuarios de tráfico elevado estén lo suficientemente segmentados como para mantener el tiempo de respuesta en un valor bajo que sea aceptable. A no ser, por supuesto, que solo haya un usuario en cada segmento.
+
+Los conmutadores realizan una conexión virtual entre un nodo que transmite y uno que recibe. Esta conexión se realiza en base a la dirección de destino de cada paquete, y solo dura el tiempo necesario para transmitir un paquete, creando esencialmente un segmento privado para el usuario. Dado que el paquete se transmite solo al puerto asociado con esa dirección de destino específica, ningún otro puerto recibe el paquete, lo que proporciona tráfico reducido y, como bonificación adicional, alta seguridad. En un conmutador, las transferencias de datos pueden tener lugar en paralelo y a una velocidad de red completa.
+
+Pero la conmutación por sí sola no es suficiente para acelerar la red hoy en día, por lo que los conmutadores actuales ofrecen una combinación de segmentos de red de alta velocidad y de conmutación. La esencia de la estrategia es incrementar el ancho de banda desde el armario de cableado al servidor, dejando velocidades menores entre la computadora de escritorio y el armario.
+
+3.2.2. Redes LAN de alta velocidad
+Los últimos años han sido testigos de cambios vertiginosos en la tecnología, el diseño y las aplicaciones comerciales de las redes de área local. Una de las principales características de esta evolución es la introducción de toda una gama de esquemas en las redes locales de alta velocidad. Los distintos enfoques para el diseño de redes LAN de alta velocidad se han plasmado en productos comerciales con objeto de dar solución a las continuas necesidades del mercado. De entre ellas, las más importantes son:
+
+Gigabit Ethernet y velocidades superiores: la extensión de la técnica de acceso múltiple con detección de portadora y detección de colisiones (CSMA/CD, Carrier Sense Multiple Access with Collision Detection) de 10 Mbps y 100 Mbps a altas velocidades constituye una estrategia lógica, puesto que tiende a preservar la inversión realizada en los sistemas actuales.
+Canal de fibra: este estándar proporciona una solución de bajo coste y fácilmente escalable para alcanzar tasas de datos elevadas en áreas locales.
+3.2.2.1 Ethernet
+Las redes LAN de alta velocidad más ampliamente utilizadas en la actualidad son las basadas en Ethernet, desarrolladas por el comité de estándares IEEE 802.3.
+
+Una red Ethernet tradicional es semi-duplex: una estación puede transmitir una trama o recibirla, pero no ambas cosas simultáneamente. Sin embargo, en la actualidad el estándar IEEE 802.3 contempla el modo de funcionamiento full-duplex, en el que una estación puede transmitir y recibir al mismo tiempo. Para ello, es preciso introducir algunos cambios para funcionar en modo full-duplex:
+
+Las estaciones conectadas deben tener tarjetas adaptadoras full-duplex en lugar de las semi-duplex tradicionales.
+El punto central en la topología en estrella no puede ser simplemente un repetidor multipuesto, sino un concentrador conmutado. En este caso, cada estación constituye un dominio de colisión separado. De hecho, las colisiones no se producen y el algoritmo CSMA/CD no es necesario.
+Uno de los aspectos positivos de Ethernet es que soporta cómodamente una configuración que incluya diferentes velocidades. Así, por ejemplo, podríamos usar una red LAN troncal a 10 Gbps que interconecte a cierto número de conmutadores a 1 Gbps. Las estaciones pueden conectarse a estos conmutadores o a otros que a su vez se conectarán a los primeros, bien a 1 Gbps, bien a 10/100 Mbps, dependiendo de las necesidades.
+
+3.2.2.1.1 Gigabit Ethernet
+A finales de 1995, el comité IEEE 802.3 formó el grupo de trabajo de alta velocidad con el fin de investigar estrategias para transmitir paquetes con formato Ethernet a velocidades del orden de Gigabits por segundo. Desde entonces se han especificado un conjunto de estándares a 1000 Mbps.
+
+Gigabit Ethernet define un nuevo medio y una especificación para la transmisión, pero sigue adoptando tanto el protocolo CSMA/CD como el formato de trama de sus predecesores Ethernet a 10 Mbps y 100 Mbps. Además, es compatible con 100BASE-T y 10BASE-T, facilitando la migración.
+
+3.2.2.1.2 Ethernet de 10 Gbps
+En los últimos años la atención se ha desplazado hacia Ethernet con capacidad de 10 Gbps. El principal requisito que ha motivado este interés ha sido el incremento en el tráfico de Internet e intranets. Este incremento espectacular se ha debido a una serie de factores:
+
+Incremento en el número de conexiones de red.
+Incremento en la velocidad de conexión de cada estación final.
+Incremento en el despliegue de aplicaciones demandantes de ancho de banda, como el vídeo de alta calidad.
+Incremento en el hospedaje de web y el tráfico de las aplicaciones de hospedaje.
+Actualmente se suele usar Ethernet de 10 Gbps para construir redes troncales locales de alta velocidad que proporcionan interconexión a conmutadores de alta capacidad. A medida que la demanda de ancho de banda crezca, Ethernet de 10 Gbps podrá ser desplegada a lo largo de toda la red, interconectando agrupaciones centralizadas de servidores, redes troncales y proporcionando cobertura para toda un área.
+
+Esta tecnología permite que los ISP (Internet Service Providers) y los NSP (Network Service Providers) puedan ofrecer enlaces de alta velocidad a un costo reducido entre encaminadores y conmutadores adyacentes. Permite también la construcción de MAN (Metropolitan Area Network) y de WAN (Wide Area Network) que conecten redes LAN geográficamente dispersas entre distintos puntos de presencia. Ethernet comienza así a competir con las tecnologías de transmisión de área amplia.
+
+Las distancias máximas de los enlaces cubren un intervalo de aplicaciones, desde 300 m hasta 40 km. Los enlaces funcionan exclusivamente en modo full-duplex, usando diversos medios físicos de fibra óptica, así como cableado UTP de categorías 6 o 7.
+
+Por último, cabe destacar que, actualmente, existen estándares también para velocidades de 100 Gbps.
+
+3.3. Rendimiento de las redes locales inalámbricas
+Como ocurre con la mayoría de las tecnologías de red, la mayoría de los problemas suelen existir en la capa física. Un analizador de espectro es a menudo una herramienta útil al diagnosticar problemas de interferencias de radiofrecuencia de capa 1. Después de eliminar la capa 1 como fuente de posibles problemas, un administrador de WLAN debería intentar determinar si el problema existe en la capa de enlace. Los problemas de autenticación y asociación ocurren a menudo debido a una configuración incorrecta de seguridad y administración en los puntos de acceso, controladores WLAN y software de utilidad de cliente. Un analizador de protocolo WLAN es a menudo una herramienta muy útil para solucionar problemas de capa 2.
+
+Los comportamientos de propagación de las señales de radiofrecuencia y las interferencias afectarán tanto al rendimiento como a la cobertura de la WLAN. Debido a que la movilidad suele ser necesaria en un entorno WLAN, se pueden producir problemas de roaming. La naturaleza semidúplex del medio también trae desafíos importantes. Por último, también se deben dar consideraciones diferentes en las implementaciones 802.11 al aire libre.
+
+3.3.1. Retransmisiones de capa 2
+El enemigo mortal del rendimiento en las WLAN son las retransmisiones que se producen en la subcapa MAC. En 802.11, si se produce una colisión o cualquier parte de una trama unicast está dañada, la comprobación del CRC fallará, el receptor no devolverá una trama ACK, y la trama deberá ser retransmitida.
+
+Las retransmisiones excesivas de la capa 2 afectan a la WLAN de dos maneras. En primer lugar, aumentan la sobrecarga y por lo tanto disminuyen el rendimiento. En segundo lugar, si los datos de aplicación han de ser retransmitidos en la capa 2, la entrega del tráfico de aplicación se retrasa o se vuelve incoherente. Las retransmisiones excesivas de la capa 2 suelen dar lugar a problemas de latencia y jitter para aplicaciones sensibles al tiempo como voz y video.
+
+¿Cómo se pueden medir las retransmisiones de la capa 2? Cualquier buen analizador de protocolo 802.11 puede realizar un seguimiento de las estadísticas de retransmisión de la capa 2 para toda la WLAN. Además, también pueden rastrear estadísticas de retransmisión para cada punto de acceso y para cada estación cliente de manera individual.
+
+Las retransmisiones de la capa 2 son el resultado de muchos posibles problemas: caminos múltiples, interferencias de radiofrecuencia y baja relación señal-ruido (SNR) son problemas de capa 1 que generan retransmisiones en la capa 2. Otras causas de las retransmisiones de capa 2 incluyen nodos ocultos, problemas con los ajustes de potencia entre el punto de acceso y las estaciones, e interferencias entre canales adyacentes.
+
+3.3.2. Consideraciones sobre la cobertura y capacidad de 802.11
+Proporcionar cobertura y capacidad en un diseño WLAN resuelve muchos problemas. Los problemas de roaming y problemas de interferencia a menudo se mitigarán con antelación si se llevan a cabo técnicas de diseño WLAN adecuadas y se lleva a cabo un estudio exhaustivo del sitio. A continuación, discutiremos algunas consideraciones que deben ser tratadas para proporcionar cobertura, capacidad y rendimiento adecuados dentro de una zona de cobertura 802.11.
+
+A medida que los radios de la estación cliente se alejan del punto de acceso, se desplazarán a capacidades de menor ancho de banda utilizando un proceso conocido como conmutación de velocidad dinámica (DRS). Los puntos de acceso pueden admitir múltiples velocidades de datos dependiendo de la tecnología de espectro extendido utilizada. Por ejemplo, 802.11b admite velocidades de datos de 11, 5.5, 2 y 1 Mbps. Las transmisiones de velocidad de datos entre el punto de acceso y las estaciones cliente se desplazarán hacia abajo o hacia arriba dependiendo de la calidad de la señal. Existe una correlación entre la calidad de la señal y la distancia desde el punto de acceso.
+
+Al diseñar y desplegar una WLAN, siempre hay que tener en cuenta tanto la cobertura como la capacidad. Varios factores pueden afectar el rango de cobertura de una celda inalámbrica, así como al rendimiento de una WLAN 802.11. Las siguientes variables pueden afectar el rango de una WLAN: la potencia de transmisión, la antena, la longitud de onda, el entorno físico, y la pérdida de la trayectoria del espacio libre. En cualquier entorno de radiofrecuencia, la pérdida de la trayectoria del espacio libre (FSPL, Free Space Path Loss).
+
+El diseño adecuado de WLAN debe tener en cuenta tanto la cobertura como la capacidad. Las variables que acabamos de mencionar afectan a la cobertura y el rango. Las consideraciones de rendimiento (throughput) son tan importantes como las consideraciones de rango. Las siguientes son algunas de las muchas variables que pueden afectar el rendimiento de una WLAN:
+
+Acceso múltiple de detección de portadora con evitación de colisiones (CSMA/CA). CSMA/CA introduce sobrecarga y consume ancho de banda. La sobrecarga debido a la contención del medio suele ser del 50 por ciento o más en las redes 802.11a/b/g, mientras que la media en las redes 802.11n/ac/ax suele ser del 35 al 40 por ciento.
+Encriptación. El cifrado genera sobrecarga. El cifrado WEP/RC4 agrega 8 bytes adicionales de sobrecarga por trama, el cifrado TKIP/RC4 añade 20 bytes adicionales de sobrecarga por trama y el cifrado CCMP/AES añade 16 bytes extra de sobrecarga por trama. Las VPN de capa 3 a menudo usan cifrado DES o 3DES, los cuales también consumen un ancho de banda significativo. Las ganancias recientes en las capacidades de procesamiento y las velocidades de datos de 802.11n/ac/ax han hecho que la sobrecarga del cifrado sea mucho menor en los últimos años.
+Uso de la aplicación. Los diferentes tipos de aplicaciones tienen efectos variables en el consumo de ancho de banda. Por ejemplo, las aplicaciones que requieren transferencias de archivos o acceso a bases de datos a menudo requieren mucho ancho de banda. El streaming de vídeo de alta definición, por su parte, también requiere un gran ancho de banda.
+Número de clientes. La WLAN es un medio compartido. Todo el rendimiento es agregado y todo el ancho de banda disponible se comparte.
+4. Conclusiones
+Hemos realizado un análisis aproximado del comportamiento de las principales técnicas de acceso mediante el establecimiento de situaciones extremas de carga en la red e ideas muy intuitivas del concepto de rendimiento. En este sentido, el rendimiento es "la cantidad de información útil que la red es capaz de transportar en relación con la cantidad de bits transportados realmente".
+
+Hemos introducido el parámetro a, básico en el análisis del rendimiento, definido como la relación entre el retardo de propagación del medio de extremo a extremo respecto al tiempo de transmisión de un paquete. En función de este parámetro hemos establecido un límite superior de eficiencia para una LAN, independientemente del protocolo utilizado.
+
+La herramienta fundamental para medir los parámetros que afectan al rendimiento de las redes son los monitores. De ellos, el estándar RMON es uno de los más populares.
+
+Otros factores que influyen en gran medida en el rendimiento de las redes de ordenadores se encuentran en los propios ordenadores, ya que, desde la velocidad del procesador de un servidor, a la cantidad de memoria disponible entre otros, pueden reducir el rendimiento de la red debido a que los ordenadores presentes en ella no realizan sus funciones con la suficiente presteza.
+
+Sin embargo, cuando el rendimiento de los ordenadores presentes en la red es óptimo, para mejorar las prestaciones de la red hay que recurrir a técnicas que permiten aumentar el ancho de banda disponible para cada estación. Estas técnicas son la segmentación, que reduce el número de estaciones presentes en cada segmento de la red, y la conmutación, que crea segmentos privados entre la estación que emite y la que recibe. La última opción es recurrir a redes LAN de alta velocidad.
