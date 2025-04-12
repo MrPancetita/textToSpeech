@@ -17,7 +17,7 @@ def synthesize_speech_from_file(file_path, output_audio_path):
     speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
 
     # Set the voice name, refer to https://aka.ms/speech/voices/neural for full list.
-    speech_config.speech_synthesis_voice_name = "es-ES-TristanMultilingualNeural"
+    speech_config.speech_synthesis_voice_name = "es-ES-ArabellaMultilingualNeural"
 
     # Create a speech synthesizer using the default speaker as audio output.
     audio_config = speechsdk.audio.AudioOutputConfig(filename=output_audio_path)
