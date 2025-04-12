@@ -16,7 +16,8 @@ speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_r
 audio_config = speechsdk.audio.AudioOutputConfig(filename="/output/file.wav")
 
 # Set the voice name, refer to https://aka.ms/speech/voices/neural for full list.
-speech_config.speech_synthesis_voice_name = "es-ES-TristanMultilingualNeural"
+#speech_config.speech_synthesis_voice_name = "es-ES-TristanMultilingualNeural"
+speech_config.speech_synthesis_voice_name = "es-ES-ArabellaMultilingualNeural"
 
 # Creates a speech synthesizer using the default speaker as audio output.
 speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)

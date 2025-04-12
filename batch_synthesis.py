@@ -26,7 +26,7 @@ data = {
     "inputKind": "SSML",
     "inputs": [
         {
-            "content": f"<speak version=\"1.0\" xml:lang=\"es-ES\"><voice name=\"es-ES-TristanMultilingualNeural\">{texto_input_content}</voice></speak>"
+            "content": f"<speak version=\"1.0\" xml:lang=\"es-ES\"><voice name=\"es-ES-ArabellaMultilingualNeural\">{texto_input_content}</voice></speak>"
         }
     ],
     "properties": {
