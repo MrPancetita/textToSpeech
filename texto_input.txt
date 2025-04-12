@@ -1,5 +1,7 @@
 T63. Funciones y servicios del nivel físico. Tipos y medios de transmisión. Adaptación al medio de transmisión. Limitaciones a la transmisión. Estándares
+
 0. Introducción
+
 La comunicación entre sistemas informáticos se basa en modelos de capas que abstraen la complejidad del proceso. El nivel físico constituye la base de estos modelos, como OSI y TCP/IP, siendo el responsable directo de la transmisión de bits a través de un canal de comunicación. Su función esencial es ofrecer a la capa superior (nivel de enlace de datos) un servicio de transporte de un flujo de bits entre dos máquinas físicamente conectadas, ocultando los detalles de cómo se logra esta transmisión sobre un medio concreto.
 
 Este tema explora en profundidad el nivel físico. Comenzaremos describiendo sus funciones y servicios. A continuación, analizaremos los diferentes tipos de transmisión y los medios utilizados, tanto guiados como no guiados. Seguidamente, detallaremos las técnicas de adaptación al medio, incluyendo codificación, modulación y multiplexación. Posteriormente, abordaremos las limitaciones inherentes a la transmisión, como la atenuación, la distorsión, el ruido y los límites teóricos de velocidad. Finalmente, revisaremos algunos de los estándares de nivel físico más relevantes y actuales en el ámbito de las redes de área local, el acceso a Internet y las comunicaciones móviles.

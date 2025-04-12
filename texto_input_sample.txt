@@ -1,0 +1,1 @@
+El nivel físico se encarga de la transmisión física de bits individuales (ceros y unos) a través de un medio de transmisión. No interpreta el significado de esos bits, simplemente asegura que un bit enviado por el emisor sea recibido correctamente por el receptor.
